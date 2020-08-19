@@ -1,38 +1,16 @@
-﻿import types = require("utils/types");
-import definition = require("./subtitle-source");
-import common = require("./subtitle-source-common");
-import * as utilsModule from "utils/utils";
-import * as fileSystemModule from "file-system";
-import * as enumsModule from "ui/enums";
+﻿import { SubtitleSource as SubtitleSourceDefinition } from "./subtitle-source";
+import { knownFolders, path as fsPath, Utils } from "@nativescript/core";
 
-global.moduleMerge(common, exports);
+export * from "./subtitle-source-common";
 
-var utils: typeof utilsModule;
-function ensureUtils() {
-    if (!utils) {
-        utils = require("utils/utils");
-    }
-}
-
-var fs: typeof fileSystemModule;
-function ensureFS() {
-    if (!fs) {
-        fs = require("file-system");
-    }
-}
-
-declare var android: any;
-
-export class SubtitleSource implements definition.SubtitleSource {
+export class SubtitleSource implements SubtitleSourceDefinition {
     public android: any; /// String - url or resource
     public ios: any; /// NSString
 
     public loadFromResource(name: string): boolean {
         this.android = null;
 
-        ensureUtils();
-
-        var res = utils.ad.getApplicationContext().getResources();
+        var res = Utils.ad.getApplicationContext().getResources();
         if (res) {
             var UrlPath = "android.resource://org.nativescript.videoPlayer/R.raw." + name;
             this.android = UrlPath;
@@ -49,12 +27,9 @@ export class SubtitleSource implements definition.SubtitleSource {
     }
 
     public loadFromFile(path: string): boolean {
-
-        ensureFS();
-
-        var fileName = types.isString(path) ? path.trim() : "";
+        var fileName = Utils.isString(path) ? path.trim() : "";
         if (fileName.indexOf("~/") === 0) {
-            fileName = fs.path.join(fs.knownFolders.currentApp().path, fileName.replace("~/", ""));
+            fileName = fsPath.join(knownFolders.currentApp().path, fileName.replace("~/", ""));
         }
 
         this.android = fileName;

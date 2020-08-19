@@ -1,45 +1,16 @@
-﻿import types = require("utils/types");
-import definition = require("./video-source");
-import common = require("./video-source-common");
-import * as utilsModule from "utils/utils";
-import * as fileSystemModule from "file-system";
-import * as enumsModule from "ui/enums";
+﻿import { Utils, path as fsPath, knownFolders } from "@nativescript/core";
+import { VideoSource as VideoSourceDefinition } from "./video-source";
 
-global.moduleMerge(common, exports);
+export * from "./video-source-common";
 
-var utils: typeof utilsModule;
-function ensureUtils() {
-    if (!utils) {
-        utils = require("utils/utils");
-    }
-}
-
-var fs: typeof fileSystemModule;
-function ensureFS() {
-    if (!fs) {
-        fs = require("file-system");
-    }
-}
-
-var enums: typeof enumsModule;
-function ensureEnums() {
-    if (!enums) {
-        enums = require("ui/enums");
-    }
-}
-
-declare var android, AVPlayer: any;
-
-export class VideoSource implements definition.VideoSource {
+export class VideoSource implements VideoSourceDefinition {
     public android: any; /// android.widget.VideoView
     public ios: any; /// AVPlayer
 
     public loadFromResource(name: string): boolean {
         this.android = null;
 
-        ensureUtils();
-
-        var res = utils.ad.getApplicationContext().getResources();
+        var res = Utils.ad.getApplicationContext().getResources();
         if (res) {
             var UrlPath = "android.resource://org.nativescript.videoPlayer/R.raw." + name;
             this.android = UrlPath;
@@ -56,12 +27,9 @@ export class VideoSource implements definition.VideoSource {
     }
 
     public loadFromFile(path: string): boolean {
-
-        ensureFS();
-
-        var fileName = types.isString(path) ? path.trim() : "";
+        var fileName = Utils.isString(path) ? path.trim() : "";
         if (fileName.indexOf("~/") === 0) {
-            fileName = fs.path.join(fs.knownFolders.currentApp().path, fileName.replace("~/", ""));
+            fileName = fsPath.join(knownFolders.currentApp().path, fileName.replace("~/", ""));
         }
 
         this.android = fileName;

@@ -1,4 +1,4 @@
-﻿import { ios } from "tns-core-modules/application";
+﻿import { Application } from "@nativescript/core";
 import { Video as VideoBase, VideoFill, videoSourceProperty, fillProperty, subtitleSourceProperty } from "./videoplayer-common";
 
 export * from "./videoplayer-common";
@@ -145,7 +145,7 @@ export class Video extends VideoBase {
         }
 
         if (!this._didPlayToEndTimeActive) {
-            this._didPlayToEndTimeObserver = ios.addNotificationObserver(AVPlayerItemDidPlayToEndTimeNotification, this.AVPlayerItemDidPlayToEndTimeNotification.bind(this));
+            this._didPlayToEndTimeObserver = Application.ios.addNotificationObserver(AVPlayerItemDidPlayToEndTimeNotification, this.AVPlayerItemDidPlayToEndTimeNotification.bind(this));
             this._didPlayToEndTimeActive = true;
         }
 
@@ -282,7 +282,7 @@ export class Video extends VideoBase {
         this._removeStatusObserver(this._player.currentItem);
 
         if (this._didPlayToEndTimeActive) {
-            ios.removeNotificationObserver(this._didPlayToEndTimeObserver, AVPlayerItemDidPlayToEndTimeNotification);
+            Application.ios.removeNotificationObserver(this._didPlayToEndTimeObserver, AVPlayerItemDidPlayToEndTimeNotification);
             this._didPlayToEndTimeActive = false;
         }
 
@@ -348,7 +348,7 @@ export class Video extends VideoBase {
 
 }
 
-class PlayerObserverClass extends NSObject {
+const PlayerObserverClass = (NSObject as any).extend({
     observeValueForKeyPathOfObjectChangeContext(path: string, obj: Object, change: NSDictionary<any, any>, context: any) {
         if (path === "status") {
             if (this["_owner"]._player.currentItem.status === AVPlayerItemStatus.ReadyToPlay && !this["_owner"]._videoLoaded) {
@@ -356,4 +356,4 @@ class PlayerObserverClass extends NSObject {
             }
         }
     }
-}
+});

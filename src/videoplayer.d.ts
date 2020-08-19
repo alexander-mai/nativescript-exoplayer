@@ -1,4 +1,5 @@
-import { View } from "tns-core-modules/ui/core/view";
+import { View } from "@nativescript/core";
+
 export declare enum VideoFill {
   default = "default",
   aspect = "aspect",
@@ -43,7 +44,7 @@ export declare class Video extends View {
 
   /**
    * aspect/fill settings
-   * Android: 
+   * Android:
    * When set to VideoFill.aspectFill, the aspect ratio of the video will not be honored and it will fill the entire space available.
 
    * iOS:
